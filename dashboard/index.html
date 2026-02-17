@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚚 Logistics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid #00ff88;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #00ff88;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(0, 255, 136, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .card h2 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        
+        .card p {
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #00ff88;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #00cc6a;
+            transform: scale(1.05);
+        }
+        
+        .status {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status h3 {
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #aaa;
+        }
+        
+        .metric-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚚 Logistics Backoffice</h1>
+            <p class="subtitle">AI-Powered Logistics Management System</p>
+        </div>
+        
+        <div class="status" id="status">
+            <h3>📊 System Status</h3>
+            <div class="metric">
+                <span class="metric-label">Pending Orders</span>
+                <span class="metric-value" id="pending">--</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Active Drivers</span>
+                <span class="metric-value" id="drivers">--</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Unpaid Invoices</span>
+                <span class="metric-value" id="unpaid">--</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Overdue Orders</span>
+                <span class="metric-value" id="overdue">--</span>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>📋 Orders</h2>
+                <p>Manage and track all customer orders, assignments, and deliveries.</p>
+                <a href="#" class="btn" onclick="loadOrders()">View Orders</a>
+            </div>
+            
+            <div class="card">
+                <h2>🚗 Drivers</h2>
+                <p>Monitor driver availability, assignments, and performance metrics.</p>
+                <a href="#" class="btn" onclick="loadDrivers()">View Drivers</a>
+            </div>
+            
+            <div class="card">
+                <h2>💰 Invoices</h2>
+                <p>Generate, track, and manage customer invoices and payments.</p>
+                <a href="#" class="btn" onclick="loadInvoices()">View Invoices</a>
+            </div>
+            
+            <div class="card">
+                <h2>⚙️ Agents</h2>
+                <p>Monitor AI agents: Secretary, Accounting, Scheduler, Communications.</p>
+                <a href="#" class="btn" onclick="loadAgents()">View Agents</a>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Analytics</h2>
+                <p>View revenue, costs, profitability, and operational metrics.</p>
+                <a href="#" class="btn" onclick="loadAnalytics()">View Analytics</a>
+            </div>
+            
+            <div class="card">
+                <h2>📜 Activity Log</h2>
+                <p>Review system logs and agent task execution history.</p>
+                <a href="#" class="btn" onclick="loadLogs()">View Logs</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load dashboard metrics
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/admin/dashboard');
+                const data = await response.json();
+                
+                if (data.success && data.summary) {
+                    document.getElementById('pending').textContent = data.summary.pending_orders || 0;
+                    document.getElementById('drivers').textContent = data.summary.active_drivers || 0;
+                    document.getElementById('unpaid').textContent = data.summary.unpaid_invoices || 0;
+                    document.getElementById('overdue').textContent = data.summary.overdue_orders || 0;
+                }
+            } catch (e) {
+                console.log('Dashboard API not available yet');
+            }
+        }
+        
+        function loadOrders() {
+            alert('Orders module coming soon!');
+        }
+        
+        function loadDrivers() {
+            alert('Drivers module coming soon!');
+        }
+        
+        function loadInvoices() {
+            alert('Invoices module coming soon!');
+        }
+        
+        function loadAgents() {
+            alert('Agents module coming soon!');
+        }
+        
+        function loadAnalytics() {
+            alert('Analytics module coming soon!');
+        }
+        
+        function loadLogs() {
+            alert('Activity Log module coming soon!');
+        }
+        
+        // Load on page load
+        window.addEventListener('load', loadDashboard);
+        
+        // Refresh every 30 seconds
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>
