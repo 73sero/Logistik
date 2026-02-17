@@ -439,13 +439,22 @@ def internal_error(error):
 # ============================================
 
 if __name__ == '__main__':
+    import sys
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Logistics API Server')
+    parser.add_argument('--port', type=int, default=5000, help='Port to run on (default: 5000)')
+    args = parser.parse_args()
+    
+    port = args.port
+    
     print("\n" + "="*60)
     print("🚀 LOGISTICS API + JARVIS DASHBOARDS STARTING...")
     print("="*60)
     print("\n📍 MAIN ENDPOINTS:")
-    print("  🚚 Logistics: http://localhost:5000/dashboard")
-    print("  ⚡ Jarvis Desktop: http://localhost:5000/jarvis")
-    print("  📱 Jarvis Mobile: http://localhost:5000/jarvis/mobile")
+    print(f"  🚚 Logistics: http://localhost:{port}/dashboard")
+    print(f"  ⚡ Jarvis Desktop: http://localhost:{port}/jarvis")
+    print(f"  📱 Jarvis Mobile: http://localhost:{port}/jarvis/mobile")
     print("\n🔌 API ENDPOINTS:")
     print("  GET  /api/admin/dashboard")
     print("  POST /api/customer/order")
@@ -459,4 +468,4 @@ if __name__ == '__main__':
     print("Press CTRL+C to stop")
     print("="*60 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=port)
